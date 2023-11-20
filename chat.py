@@ -132,7 +132,7 @@ class GPT():
       ]
     messages.extend(topic)
     mess = []
-    if MODEL == 'GIGA_CHAT':
+    if MODEL == 'giga':
         for message in messages:
             if message['role'] == 'user':
                 mess.append(HumanMessage(content=message['content']))
@@ -147,7 +147,7 @@ class GPT():
         return res.content, 0, 0
         
     
-    if MODEL == 'OPEN_AI':
+    if MODEL == 'gpt':
         completion = openai.ChatCompletion.create(
             #model="gpt-3.5-turbo",
             model=self.modelVersion,
@@ -159,7 +159,7 @@ class GPT():
         #return f'{completion.choices[0].message.content}\n\n{allToken}\n{allTokenPrice}', completion["usage"]["total_tokens"], 0.002*(completion["usage"]["total_tokens"]/1000)
         return f'{completion.choices[0].message.content}', completion["usage"]["total_tokens"], 0.002*(completion["usage"]["total_tokens"]/1000)
     
-    if MODEL == 'YANDEX':
+    if MODEL == 'yandex':
         messages = ' '.join([x['content'] for x in topic])
         llmYandex.instruction_text = system
         answer = llmYandex._call(messages)
