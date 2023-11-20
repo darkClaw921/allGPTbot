@@ -51,8 +51,8 @@ def send_text(message):
     pprint(history)
     # if history is None:
     #     history = []
-
-    answer = gpt.answer(message.text, history, 1, MODEL=model)[0]
+    promt = 'Ты бот-помошник, который помогает пользователю решить его проблемы.'
+    answer = gpt.answer(promt, history, 1, MODEL=model)[0]
     bot.send_message(message.chat.id, answer)
 
    
