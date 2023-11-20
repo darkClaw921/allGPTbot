@@ -6,6 +6,7 @@ from workRedis import *
 import os 
 from dotenv import load_dotenv
 from loguru import logger
+from pprint import pprint
 load_dotenv()
 
 bot = telebot.TeleBot(os.getenv('TOKEN'))
@@ -47,7 +48,7 @@ def send_text(message):
     model = USERS[message.chat.id]
     add_message_to_history(message.chat.id, 'user', message.text)
     history = get_history(message.chat.id)
-    
+    pprint(history)
     # if history is None:
     #     history = []
 
