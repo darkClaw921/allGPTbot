@@ -16,28 +16,28 @@ USERS = {}
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, 'Привет, я бот, который отвечает на вопросы. Напиши мне что-нибудь. Сейчас вы работаете с OPEN_AI. чтобы переключится на других ботов введите /help')
-    USERS[message.chat.id] = 'OPEN_AI'
+    bot.send_message(message.chat.id, 'Привет, я бот, который отвечает на вопросы. Напиши мне что-нибудь. Сейчас вы работаете с gpt. чтобы переключится на других ботов введите /help')
+    USERS[message.chat.id] = 'gpt'
     clear_history(message.chat.id)
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.send_message(message.chat.id, 'Список ботов: /OPEN_AI, \n/YANDEX, \n/GIGA_CHAT. Чтобы переключится на другого бота введите /имя_бота')
+    bot.send_message(message.chat.id, 'Список ботов: /gpt, \n/yandex, \n/giga. Чтобы переключится на другого бота введите /имя_бота')
 
-@bot.message_handler(commands=['OPEN_AI'])
+@bot.message_handler(commands=['gpt'])
 def openai(message):
-    bot.send_message(message.chat.id, 'Вы переключились на OPEN_AI')
-    USERS[message.chat.id] = 'OPEN_AI'
+    bot.send_message(message.chat.id, 'Вы переключились на gpt')
+    USERS[message.chat.id] = 'gpt'
 
-@bot.message_handler(commands=['YANDEX'])
+@bot.message_handler(commands=['yandex'])
 def yandex(message):
-    bot.send_message(message.chat.id, 'Вы переключились на YANDEX')
-    USERS[message.chat.id] = 'YANDEX'
+    bot.send_message(message.chat.id, 'Вы переключились на yandex')
+    USERS[message.chat.id] = 'yandex'
 
-@bot.message_handler(commands=['GIGA_CHAT'])
+@bot.message_handler(commands=['giga'])
 def gigachat(message):
-    bot.send_message(message.chat.id, 'Вы переключились на GIGA_CHAT')
-    USERS[message.chat.id] = 'GIGA_CHAT'
+    bot.send_message(message.chat.id, 'Вы переключились на giga')
+    USERS[message.chat.id] = 'giga'
 
 
 
@@ -69,8 +69,8 @@ bot.infinity_polling()
 
 # if __name__ == '__main__':
     # main()
-# a = gpt.answer('Какие факторы влияют на стоимость страховки на дом?',[],1,MODEL='GIGA_CHAT')
-# a = gpt.answer('Какие факторы влияют на стоимость страховки на дом?',[],1,MODEL='YANDEX')
+# a = gpt.answer('Какие факторы влияют на стоимость страховки на дом?',[],1,MODEL='giga')
+# a = gpt.answer('Какие факторы влияют на стоимость страховки на дом?',[],1,MODEL='yandex')
 # print(a)
 
 
