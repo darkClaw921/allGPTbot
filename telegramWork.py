@@ -23,7 +23,8 @@ def start(message):
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.send_message(message.chat.id, 'Список ботов: /gpt, \n/yandex, \n/giga. Чтобы переключится на другого бота введите /имя_бота')
+    # bot.send_message(message.chat.id, 'Подключенные нейросети: \n/gpt, \n/yandex, \n/giga. \n/start - начать все заново(сбросить контекст) Чтобы переключится на другого бота введите /имя_бота')
+    bot.send_message(message.chat.id, 'Подключенные нейросети: \n/gpt, \n/yandex, \n/giga. \n/start - начать все заново(сбросить контекст)')
 
 @bot.message_handler(commands=['gpt'])
 def openai(message):
