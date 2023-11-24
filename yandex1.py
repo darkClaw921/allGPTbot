@@ -7,8 +7,12 @@ from YaGPT import YandexGPTEmbeddings
 from YaGPT import YandexLLM
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 token = os.environ.get('YC_IAM_TOKEN')
+
+# token = 
+
 
 instructions = """
 Представь себе, что ты сотрудник Yandex Cloud. Твоя задача - вежливо и по мере своих сил отвечать на все вопросы собеседника."""

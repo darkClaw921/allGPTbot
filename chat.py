@@ -26,6 +26,7 @@ from loguru import logger
 #sheet = workGS.Sheet('kgtaprojects-8706cc47a185.json','цены на дома 4.0 актуально ')
 from gigachat2 import gigaChat1
 from yandex1 import llmYandex
+from tokenGenerate import get_iam_token
 
 class bcolors:
     HEADER = '\033[95m'
@@ -160,9 +161,17 @@ class GPT():
         return f'{completion.choices[0].message.content}', completion["usage"]["total_tokens"], 0.002*(completion["usage"]["total_tokens"]/1000)
     
     if MODEL == 'yandex':
+        global llmYandex 
         messages = ' '.join([x['content'] for x in topic])
         llmYandex.instruction_text = system
-        answer = llmYandex._call(messages)
+        try:
+            answer = llmYandex._call(messages)
+        except Exception as e :
+            logger.critical(e)
+            llmYandex.iam_token=get_iam_token()
+            answer = llmYandex._call(messages) 
+           
+        
         return answer, 0, 0
         # pass
 
