@@ -102,9 +102,10 @@ def send_text(message):
     #     history = []
 
     if text.startswith('/image'):
-        text = text.split(' ')[1]
+        text = text.replace('/image', '')
         url = gpt.create_image(promt=text)
         bot.send_photo(message.chat.id, url)
+        return 0
 
     promt = 'Ты бот-помошник, который помогает пользователю решить его проблемы.'
     answer = gpt.answer(promt, history, 1, MODEL=model)[0]
