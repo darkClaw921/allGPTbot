@@ -71,7 +71,7 @@ def start(message):
 @bot.message_handler(commands=['help'])
 def help(message):
     # bot.send_message(message.chat.id, 'Подключенные нейросети: \n/gpt, \n/yandex, \n/giga. \n/start - начать все заново(сбросить контекст) Чтобы переключится на другого бота введите /имя_бота')
-    bot.send_message(message.chat.id, 'Подключенные нейросети: \n/gpt \n/yandex \n/giga \n/start - начать новый диалог (сбросить контекст)\nЕсли вы хотите сгенерировать изображение, то введите /image промт изображения одной коммандой')
+    bot.send_message(message.chat.id, 'Подключенные нейросети: \n/gpt \n/yandex \n/giga\n/open_ai_assign - чтобы вести диалог с asst_iFpmwH8rOc2faiQ0pH3mgPTR \n/start - начать новый диалог (сбросить контекст)\nЕсли вы хотите сгенерировать изображение, то введите /image промт изображения одной коммандой')
 
 @bot.message_handler(commands=['gpt'])
 def openai(message):
@@ -87,6 +87,11 @@ def yandex(message):
 def gigachat(message):
     bot.send_message(message.chat.id, 'Вы переключились на giga')
     USERS[message.chat.id] = 'giga'
+
+@bot.message_handler(commands=['open_ai_assign'])
+def open_ai_assign(message):
+    bot.send_message(message.chat.id, 'Вы переключились на open_ai_assign')
+    USERS[message.chat.id] = 'open_ai_assign'
 
 
 

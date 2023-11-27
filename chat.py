@@ -8,6 +8,10 @@ from langchain.prompts import PromptTemplate
 import ipywidgets as widgets
 from oauth2client.service_account import ServiceAccountCredentials
 import re
+from pprint import pprint
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from langchain.schema.messages import (
     AIMessage,
     AIMessageChunk,
@@ -16,7 +20,10 @@ from langchain.schema.messages import (
     HumanMessage,
     SystemMessage,
 )
-import openai
+from openai import OpenAI
+key = os.environ.get('OPENAI_API_KEY')
+client = OpenAI(api_key=key)
+
 import tiktoken
 import sys
 from loguru import logger
@@ -42,6 +49,7 @@ class bcolors:
 class GPT():
   modelVersion = ''
   MODEL = 'OPEN_AI'
+  
   def __init__(self,modelVersion:str = 'gpt-3.5-turbo-16k'):
     self.modelVersion = modelVersion
     pass
@@ -49,7 +57,7 @@ class GPT():
   @classmethod
   #def set_key(cls):
   def set_key(cls, key):
-      openai.api_key = key
+      
       password_input = widgets.Password(
           description='Введите пароль:', 
           layout=widgets.Layout(width='500px'),
@@ -99,11 +107,9 @@ class GPT():
     # PROMPT = "An eco-friendly computer from the 90s in the style of vaporwave"
 
 
-    response = openai.Image.create(
-        prompt=promt,
-        n=1,
-        size="256x256",
-    )
+    response = client.images.generate(prompt=promt,
+    n=1,
+    size="256x256")
 
     # print(response["data"][0]["url"])
     return response["data"][0]["url"]
@@ -156,18 +162,56 @@ class GPT():
             
             elif message['role'] == 'assistant':
                 mess.append(AIMessage(content=message['content']))
+        
         res = gigaChat1(mess)
         # res.content - ответ
         return res.content, 0, 0
         
-    
-    if MODEL == 'gpt':
-        completion = openai.ChatCompletion.create(
-            #model="gpt-3.5-turbo",
-            model=self.modelVersion,
-            messages=messages,
-            temperature=temp
+    if MODEL == 'open_ai_assign':
+
+        assistant ='asst_iFpmwH8rOc2faiQ0pH3mgPTR' 
+        # openai.('')
+        
+        thread = client.beta.threads.create()
+        text = topic[-1]['content']
+        message = client.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content=text,
+        )
+
+        run = client.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=assistant,
+            instructions=""
+        )
+
+        run = client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id
             )
+        pprint(run.status)
+
+        while run.status != 'completed':
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread.id,
+                run_id=run.id
+            )
+            logger.debug(run.status)
+        messages = client.beta.threads.messages.list(
+            thread_id=thread.id
+            )
+
+        # logger.info(f'{messages=}')
+        # logger.info(f'{messages.content=}')
+        logger.info(f'{messages.data[0].content[0].text.value=}')
+        answerText = messages.data[0].content[0].text.value 
+        return answerText, 0, 0
+
+    if MODEL == 'gpt':
+        completion = client.chat.completions.create(model=self.modelVersion,
+        messages=messages,
+        temperature=temp)
         allToken = f'{completion["usage"]["total_tokens"]} токенов использовано всего (вопрос-ответ).'
         allTokenPrice = f'ЦЕНА запроса с ответом :{0.002*(completion["usage"]["total_tokens"]/1000)} $'
         #return f'{completion.choices[0].message.content}\n\n{allToken}\n{allTokenPrice}', completion["usage"]["total_tokens"], 0.002*(completion["usage"]["total_tokens"]/1000)
@@ -255,12 +299,10 @@ See https://github.com/openai/openai-python/blob/main/chatml.md for information 
     if (verbose): print('\n ===========================================: ')
     if (verbose): print(f"{self.num_tokens_from_messages(messages, 'gpt-3.5-turbo-0301')} токенов использовано на вопрос")
 
-    completion = openai.ChatCompletion.create(
-    model=self.modelVersion,
+    completion = client.chat.completions.create(model=self.modelVersion,
     #model="gpt-3.5-turbo",
     messages=messages,
-    temperature=temp
-    )
+    temperature=temp)
     if (verbose): print('\n ===========================================: ')
     if (verbose): print(f'{completion["usage"]["total_tokens"]} токенов использовано всего (вопрос-ответ).')
     if (verbose): print('\n ===========================================: ')
@@ -292,12 +334,10 @@ See https://github.com/openai/openai-python/blob/main/chatml.md for information 
       ]
     messages.extend(history)
     logger.info(f'answer message get_summary {messages}')
-    completion = openai.ChatCompletion.create(
-      model=self.modelVersion,
-      #model="gpt-3.5-turbo",
-      messages=messages,
-      temperature=temp
-      )
+    completion = client.chat.completions.create(model=self.modelVersion,
+    #model="gpt-3.5-turbo",
+    messages=messages,
+    temperature=temp)
     logger.info(f'{completion["usage"]["total_tokens"]=}')
     logger.info(f'{completion["usage"]=}')
     answer =completion.choices[0].message.content  
@@ -314,12 +354,9 @@ See https://github.com/openai/openai-python/blob/main/chatml.md for information 
     #messages.extend(history[:-1])
     messages.extend(history[:-1])
 
-    completion = openai.ChatCompletion.create(
-        model=self.modelVersion,
-        messages=messages,
-        temperature=0.3,  # Используем более низкую температуру для более определенной суммаризации
-        #max_tokens=1000  # Ограничиваем количество токенов для суммаризации
-    )
+    completion = client.chat.completions.create(model=self.modelVersion,
+    messages=messages,
+    temperature=0.3)
     answer = completion.choices[0].message.content
     logger.info(f'Саммари диалога: {answer}')
     roleAsnwer= {'role': 'user', 'content': answer}
@@ -334,28 +371,92 @@ See https://github.com/openai/openai-python/blob/main/chatml.md for information 
     #messages.extend(history[:-1])
     messages.extend(history[:-1])
 
-    completion = openai.ChatCompletion.create(
-        model=self.modelVersion,
-        messages=messages,
-        temperature=0.3,  # Используем более низкую температуру для более определенной суммаризации
-        #max_tokens=1000  # Ограничиваем количество токенов для суммаризации
-    )
+    completion = client.chat.completions.create(model=self.modelVersion,
+    messages=messages,
+    temperature=0.3)
     answer = completion.choices[0].message.content
     logger.info(f'Саммари диалога: {answer}')
     roleAsnwer= {'role': 'user', 'content': answer}
     return roleAsnwer
 
   def get_chatgpt_ansver3(self, system, topic, search_index, temp = 1):
+
     
     messages = [
       {"role": "system", "content": system},
       {"role": "user", "content": topic}
       ]
 
-    completion = openai.ChatCompletion.create(
-      model=self.modelVersion,
-      #model="gpt-3.5-turbo",
-      messages=messages,
-      temperature=temp
-      )
+    completion = client.chat.completions.create(model=self.modelVersion,
+    #model="gpt-3.5-turbo",
+    messages=messages,
+    temperature=temp)
     print('ОТВЕТ : \n', self.insert_newlines(completion.choices[0].message.content))
+
+
+
+# from openai import OpenAI
+
+
+# from openai import OpenAI
+# assistant ='asst_iFpmwH8rOc2faiQ0pH3mgPTR' 
+# # openai.('')
+
+# thread = client.beta.threads.create()
+
+# message = client.beta.threads.messages.create(
+#     thread_id=thread.id,
+#     role="user",
+#     content="ты кто?"
+# )
+
+# run = client.beta.threads.runs.create(
+#     thread_id=thread.id,
+#     assistant_id=assistant,
+#     instructions=""
+# )
+
+# run = client.beta.threads.runs.retrieve(
+#     thread_id=thread.id,
+#     run_id=run.id
+#     )
+# pprint(run.status)
+
+# while run.status != 'completed':
+#     run = client.beta.threads.runs.retrieve(
+#         thread_id=thread.id,
+#         run_id=run.id
+#     )
+#     logger.debug(run.status)
+#     # logger.debug(run)
+    
+# messages = client.beta.threads.messages.list(
+#     thread_id=thread.id
+#     )
+
+# logger.info(f'{messages=}')
+# logger.info(f'{messages.data[0].content[0].text.value=}')
+
+
+# import time
+# time.sleep(1)
+# messages = client.beta.threads.messages.list(
+#     thread_id=thread.id
+#     )
+# # logger.info(f'{messages=}')
+# logger.info(f'{message.content[0].text=}')
+# run = client.beta.threads.runs.retrieve(
+#     thread_id=thread.id,
+#     run_id=run.id
+#     )
+# pprint(run.status)
+
+# import time
+# messages = []
+# while True:
+#     time.sleep(1)
+#     messages = client.beta.threads.messages.list(
+#     thread_id=thread.id
+#     )
+    
+#     logger.info(f'{messages=}')
