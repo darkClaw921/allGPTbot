@@ -95,6 +95,19 @@ class GPT():
     return f'{text}'
 
 
+  def create_image(self, promt:str) -> str:
+    # PROMPT = "An eco-friendly computer from the 90s in the style of vaporwave"
+
+
+    response = openai.Image.create(
+        prompt=promt,
+        n=1,
+        size="256x256",
+    )
+
+    # print(response["data"][0]["url"])
+    return response["data"][0]["url"]
+
   def create_embedding(self, data):
     def num_tokens_from_string(string: str, encoding_name: str) -> int:
       """Returns the number of tokens in a text string."""
