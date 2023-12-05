@@ -99,7 +99,11 @@ def open_ai_assign(message):
 @logger.catch
 def send_text(message):
     text= message.text
-    model = USERS[message.chat.id]
+    try:
+        model = USERS[message.chat.id]
+    except:
+        USERS[message.chat.id] = 'gpt'
+
     add_message_to_history(message.chat.id, 'user', message.text)
     history = get_history(message.chat.id)
     pprint(history)
@@ -107,7 +111,7 @@ def send_text(message):
     #     history = []
 
     if text.startswith('/image'):
-        text = text.replace('/image', '')
+        text = text.replace('/image ', '')
         url = gpt.create_image(promt=text)
         bot.send_photo(message.chat.id, url)
         return 0

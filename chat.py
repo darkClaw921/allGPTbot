@@ -112,7 +112,7 @@ class GPT():
     size="256x256")
 
     # print(response["data"][0]["url"])
-    return response["data"][0]["url"]
+    return response.data[0].url
 
   def create_embedding(self, data):
     def num_tokens_from_string(string: str, encoding_name: str) -> int:
@@ -212,10 +212,10 @@ class GPT():
         completion = client.chat.completions.create(model=self.modelVersion,
         messages=messages,
         temperature=temp)
-        allToken = f'{completion["usage"]["total_tokens"]} токенов использовано всего (вопрос-ответ).'
-        allTokenPrice = f'ЦЕНА запроса с ответом :{0.002*(completion["usage"]["total_tokens"]/1000)} $'
+        # allToken = f'{completion["usage"]["total_tokens"]} токенов использовано всего (вопрос-ответ).'
+        # allTokenPrice = f'ЦЕНА запроса с ответом :{0.002*(completion["usage"]["total_tokens"]/1000)} $'
         #return f'{completion.choices[0].message.content}\n\n{allToken}\n{allTokenPrice}', completion["usage"]["total_tokens"], 0.002*(completion["usage"]["total_tokens"]/1000)
-        return f'{completion.choices[0].message.content}', completion["usage"]["total_tokens"], 0.002*(completion["usage"]["total_tokens"]/1000)
+        return f'{completion.choices[0].message.content}', 0, 0
     
     if MODEL == 'yandex':
         global llmYandex 
