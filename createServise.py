@@ -14,6 +14,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 # temp, nameDir= argv# nameMain = argv
 # print(nameDir)
+
 nameMainFile = input('Название исполняемого файла: ')
 # nameMainFile = "test2.py"
 
