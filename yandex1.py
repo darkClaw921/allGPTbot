@@ -7,11 +7,12 @@ from YaGPT import YandexGPTEmbeddings
 from YaGPT import YandexLLM
 from dotenv import load_dotenv
 import os
+import tokenGenerate
 
 load_dotenv()
-token = os.environ.get('YC_IAM_TOKEN')
+# token = os.environ.get('YC_IAM_TOKEN')
 
-# token = 
+token =  tokenGenerate.get_iam_token()
 
 
 instructions = """
@@ -22,7 +23,7 @@ llmYandex = YandexLLM(iam_token = token,
                 folder_id = "b1g76nm1veej4ag3kmmp")
 # a = llmYandex._call("Привет, как дела?")
 # print(a)
-# 1/0
+# # 1/0
 
 
 # # Промпт для обработки документов

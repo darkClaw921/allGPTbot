@@ -36,3 +36,5 @@ def get_iam_token():
     # print(token)
     return token
 #https://github.com/yandex-cloud-examples/yc-yandexgpt-qa-bot-for-docs/blob/main/YandexGPT_OpenSearch.ipynb
+# a = get_iam_token()
+# print(a)
